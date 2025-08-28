@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Chamados - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3">Lista de Chamados</h1>
+        <div>
+            <a href="{{ url_for('create_ticket') }}" class="btn btn-primary">Novo Chamado</a>
+            {% if session["username"] == "admin" %}
+                <a href="{{ url_for('register') }}" class="btn btn-success">Cadastrar Usuário</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Sair</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-info">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <table class="table table-bordered bg-white">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Loja</th>
+                <th>Descrição</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket[0] }}</td>
+                <td>{{ ticket[1] }}</td>
+                <td>{{ ticket[2] }}</td>
+                <td>
+                    <form method="post" action="{{ url_for('update_ticket', ticket_id=ticket[0]) }}">
+                        <select name="status" class="form-select form-select-sm d-inline w-auto">
+                            <option value="Pendente" {% if ticket[3]=="Pendente" %}selected{% endif %}>Pendente</option>
+                            <option value="Resolvido" {% if ticket[3]=="Resolvido" %}selected{% endif %}>Resolvido</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Atualizar</button>
+                    </form>
+                </td>
+                <td>
+                    <!-- Futuras ações podem ser inseridas aqui -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
