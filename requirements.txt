@@ -1,0 +1,8 @@
+flask
+flask_sqlalchemy
+flask_migrate
+psycopg2-binary
+reportlab
+werkzeug
+pytz
+gunicorn
