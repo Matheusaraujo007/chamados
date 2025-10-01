@@ -36,8 +36,8 @@ class Ticket(db.Model):
     status = db.Column(db.String(20), default="Pendente")
     setor = db.Column(db.String(100), nullable=False)
     prioridade = db.Column(db.String(20), nullable=False, default="Média")
-    data_hora = db.Column(db.DateTime, default=datetime.now(pytz.timezone('America/Sao_Paulo')))
-
+    # Apenas define como DateTime, sem default
+    data_hora = db.Column(db.DateTime(timezone=True), nullable=False)
 class ResetToken(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(100), unique=True)
@@ -142,18 +142,23 @@ def create_ticket():
     prioridade = request.form['prioridade']
     status = request.form.get('status', 'Pendente')
 
+    # Fuso horário de Brasília
+    brasilia_tz = pytz.timezone('America/Sao_Paulo')
+    now_brasilia = datetime.now(brasilia_tz)
+
     new_ticket = Ticket(
         setor=setor,
         descricao=descricao,
         prioridade=prioridade,
         status=status,
-        data_hora=datetime.now(pytz.timezone('America/Sao_Paulo'))
+        data_hora=now_brasilia
     )
     db.session.add(new_ticket)
     db.session.commit()
 
     flash("Chamado criado com sucesso!", "success")
     return redirect(url_for("dashboard"))
+
 
 @app.route("/mark_resolved/<int:ticket_id>")
 def mark_resolved(ticket_id):
